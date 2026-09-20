@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VAULT | Low-Light Video Anomaly Understanding</title>
+  <meta name="description" content="VAULT: a low-light RGB–event benchmark for video anomaly understanding. Explore the dataset, TEA–SEL–AEER framework, and current experimental results.">
+  <meta name="theme-color" content="#213b59">
+  <meta property="og:title" content="VAULT: A Low-Light RGB–Event Benchmark for Video Anomaly Understanding">
+  <meta property="og:description" content="Understanding anomalies under challenging illumination through RGB and event evidence.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="static/images/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="static/css/style.css">
+  <script defer src="static/js/main.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <nav class="nav wrap" aria-label="Main navigation">
+    <a class="brand" href="#" aria-label="VAULT home"><span class="brand-mark" aria-hidden="true">V<span>·</span></span>VAULT</a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="nav-links">Menu <span aria-hidden="true">☰</span></button>
+    <div id="nav-links" class="nav-links"><a href="#overview">Overview</a><a href="#dataset">Dataset</a><a href="#method">Method</a><a href="#results">Results</a><a href="#qualitative">Qualitative</a><a href="#resources">Resources</a><a href="#citation">Citation</a></div>
+  </nav>
+</header>
+<main id="main">
+  <section class="hero wrap" aria-labelledby="page-title">
+    <div class="eyebrow"><span class="status-dot"></span> RGB–EVENT · VIDEO ANOMALY UNDERSTANDING</div>
+    <p class="hero-wordmark" aria-hidden="true">VAULT<span>.</span></p>
+    <h1 id="page-title">A Low-Light RGB–Event Benchmark<br class="desktop-break"> for Video Anomaly Understanding</h1>
+    <p class="hero-description">When appearance becomes uncertain,<br class="desktop-break"> motion provides another perspective.</p>
+    <p class="hero-summary">A benchmark and event-enhanced framework for describing, classifying, localizing, and reasoning about video anomalies under challenging illumination.</p>
+    <div class="author-info"><p>Author list to be announced</p><p class="muted">Affiliations to be announced</p></div>
+    <div class="hero-actions" aria-label="Project resources">
+      <span class="button unavailable">Code <small>Coming soon</small></span>
+      <span class="button unavailable">Paper <small>Coming soon</small></span>
+      <span class="button unavailable">Dataset <small>Coming soon</small></span>
+      <span class="button unavailable">Demo <small>Coming soon</small></span>
+    </div>
+    <p class="release-note">Research in progress · Current experimental snapshot</p>
+  </section>
+
+  <section id="overview" class="wrap section overview" aria-labelledby="overview-title">
+    <div class="section-heading"><div><p class="eyebrow">01 / OVERVIEW</p><h2 id="overview-title">Finding evidence in the dark.</h2></div><p>Low-light appearance.<br>Complementary temporal evidence.</p></div>
+    <figure class="teaser">
+      <div class="teaser-top"><span><span class="status-dot"></span> LOW-LIGHT RGB SEQUENCE</span><span>Original frames · 2133_1</span></div>
+      <div class="frame-grid">
+        <figure><button class="image-zoom" type="button" aria-label="Enlarge RGB frame at 4.3 seconds"><img src="static/images/rgb-4.3s.png" width="1280" height="720" alt="Original low-light dashcam frame at 4.3 seconds, with vehicles on a dark road."></button><figcaption><span>FRAME 01</span><span>00:04.3</span></figcaption></figure>
+        <figure><button class="image-zoom" type="button" aria-label="Enlarge RGB frame at 6.8 seconds"><img src="static/images/rgb-6.8s.png" width="1280" height="720" alt="Original low-light dashcam frame at 6.8 seconds, with limited road visibility."></button><figcaption><span>FRAME 02</span><span>00:06.8</span></figcaption></figure>
+        <figure><button class="image-zoom" type="button" aria-label="Enlarge RGB frame at 9.3 seconds"><img src="static/images/rgb-9.3s.png" width="1280" height="720" alt="Original low-light dashcam frame at 9.3 seconds showing the continuing traffic scene."></button><figcaption><span>FRAME 03</span><span>00:09.3</span></figcaption></figure>
+      </div>
+      <div class="teaser-flow"><span>RGB + simulated events</span><span aria-hidden="true">→</span><span>Temporal &amp; spatial evidence</span><span aria-hidden="true">→</span><span>Multi-task understanding</span></div>
+      <figcaption class="teaser-caption">Low-light conditions degrade RGB appearance cues. Event representations can provide complementary brightness-change evidence. These are unenhanced source frames, not a model-output comparison.</figcaption>
+    </figure>
+    <div class="overview-copy"><h3>One video. Multiple questions.</h3><p>VAULT brings anomaly description, classification, temporal grounding, and video question answering into one evaluation setting. The accompanying framework uses event activity to organize RGB observations and supplies aligned event images for joint reasoning.</p></div>
+    <aside class="note"><strong>Event modality.</strong> In the current experiments, events are simulated from source videos using v2e. They are a complementary representation of the RGB signal; this is not a claim of independently captured event-camera data or illumination invariance.</aside>
+  </section>
+
+  <section id="dataset" class="section tint" aria-labelledby="dataset-title"><div class="wrap">
+    <div class="section-heading"><div><p class="eyebrow">02 / THE BENCHMARK</p><h2 id="dataset-title">A broader view of video anomalies.</h2></div><p>Appearance, time, context,<br>and question answering.</p></div>
+    <div class="stats-grid"><div><strong>1,776</strong><span>Annotated videos</span></div><div><strong>25 <small>+ normal</small></strong><span>Anomaly categories</span></div><div><strong>4</strong><span>Understanding tasks</span></div><div><strong>5,328</strong><span>VQA questions</span></div></div>
+    <p class="caption">Counts from the current annotation split. Categories are multi-label; normal is a separate label. RGB videos are paired with simulated event representations in the current pipeline.</p>
+    <div class="dataset-layout">
+      <article class="card split-card"><p class="eyebrow">CURRENT DATA SPLIT</p><h3>Training to evaluation</h3><div class="split-bar" role="img" aria-label="Train 1115 videos, validation 356 videos, test 305 videos"><span></span><span></span><span></span></div><dl class="split-legend"><div><dt><i class="train-dot"></i>Train</dt><dd>1,115</dd></div><div><dt><i class="val-dot"></i>Validation</dt><dd>356</dd></div><div><dt><i class="test-dot"></i>Test</dt><dd>305</dd></div></dl><p class="caption">Disjoint video paths across the three splits.</p></article>
+      <div class="task-grid"><article class="card"><span class="task-number">01</span><h3>Description</h3><p>Describe the visible anomaly and its surrounding context.</p></article><article class="card"><span class="task-number">02</span><h3>Classification</h3><p>Identify the anomaly categories present in a video.</p></article><article class="card"><span class="task-number">03</span><h3>Temporal grounding</h3><p>Locate the time intervals in which an anomaly occurs.</p></article><article class="card"><span class="task-number">04</span><h3>Video QA</h3><p>Answer questions about actions, context, and observed events.</p></article></div>
+    </div>
+    <div class="environment-strip"><span><strong>1,175</strong> outdoor</span><span><strong>567</strong> indoor</span><span><strong>34</strong> mixed scenes</span><span><strong>1,031</strong> night</span><span><strong>744</strong> day</span><span><strong>1</strong> uncertain time</span></div>
+    <p class="caption">Scene and time labels are case-normalized. Day/night labels describe scene context, not measured illumination.</p>
+    <div class="chart-grid"><figure class="card category-chart"><h3>Anomaly category distribution</h3><button class="image-zoom" type="button" aria-label="Enlarge category distribution"><img loading="lazy" src="static/images/stats_categories.png" width="1440" height="1184" alt="Multi-label category counts; fighting 284, traffic accident 256, normal 196, followed by other categories."></button><figcaption>Computed from all 1,776 split records; one count per video per label.</figcaption></figure><div class="chart-stack"><figure class="card"><h3>Illumination distribution</h3><button class="image-zoom" type="button" aria-label="Enlarge illumination distribution"><img loading="lazy" src="static/images/stats_illumination.png" alt="Existing project distribution of annotated illumination scores across the dataset."></button><figcaption>Existing project illumination-score visualization.</figcaption></figure><figure class="card"><h3>Video duration</h3><button class="image-zoom" type="button" aria-label="Enlarge duration distribution"><img loading="lazy" src="static/images/stats_duration.png" alt="Existing video duration histogram with short, medium, and long video groups."></button><figcaption>Existing duration histogram for the matching 1,776-video annotation set.</figcaption></figure></div></div>
+  </div></section>
+
+  <section id="method" class="wrap section" aria-labelledby="method-title">
+    <div class="section-heading"><div><p class="eyebrow">03 / THE METHOD</p><h2 id="method-title">Attend to when. Focus on where.<br>Reason with both.</h2></div><p>TEA → SEL → AEER<br>Joint RGB–event understanding</p></div>
+    <p class="section-intro">Event activity guides the selection of temporal observations and spatial regions. Aligned event images then complement RGB evidence through the model’s existing visual pathway.</p>
+    <div class="pipeline" aria-label="Method pipeline">
+      <div class="pipeline-input"><span class="eyebrow">INPUT</span><strong>RGB video + event stream</strong><span>Shared event-activity histogram</span></div>
+      <div class="module-grid"><article><span class="module-tag">TEA <span>01</span></span><h3>Temporal Evidence<br>Allocation</h3><p>Preserve global context and allocate focused observations to active temporal segments.</p><span class="module-detail">When to look</span></article><article><span class="module-tag">SEL <span>02</span></span><h3>Spatial Evidence<br>Localization</h3><p>Localize event-concentrated regions, with full-frame fallback when a crop is unsuitable.</p><span class="module-detail">Where to look</span></article><article><span class="module-tag">AEER <span>03</span></span><h3>Adaptive Event Evidence<br>Representation</h3><p>Select aligned event windows and render early, middle, and late polarity images.</p><span class="module-detail">What evidence to add</span></article></div>
+      <div class="pipeline-output"><strong>Joint RGB–event instruction tuning</strong><span>Description <b>·</b> Classification <b>·</b> Temporal grounding <b>·</b> Video QA</span></div>
+    </div>
+    <p class="caption">Conceptual flow redrawn from the current methodology and checked against repository implementation. Event activity scores are sampling signals, not anomaly probabilities.</p>
+    <details class="technical-details"><summary>Implementation at a glance</summary><div><p>TEA and SEL share 96 temporal bins and a 12 × 16 spatial grid. Current entry points request 16–24 RGB observations; allocation and deduplication can leave fewer. AEER supplies up to three anchors, each with three temporal-stage event images.</p><p>The framework uses Qwen3-VL’s existing visual pathway and language-model LoRA. The vision backbone and projection module remain frozen. No dedicated event encoder or auxiliary event loss is introduced.</p><p>The current inference anchor policy is v3; the historical full-model training cache records v2. The reported experimental snapshot should not be interpreted as an identical selection policy at training and inference.</p></div></details>
+    <div class="why-events"><div><p class="eyebrow">WHY EVENTS?</p><h3>Complementary cues.<br>A shared context.</h3><p>Brightness changes can help organize motion-sensitive evidence under challenging illumination.</p></div><article class="card"><span class="pill">RGB challenges</span><ul><li>Low contrast and underexposure</li><li>Motion blur and ambiguous appearance</li><li>Small or transient details are difficult to distinguish</li></ul></article><article class="card"><span class="pill teal">Event representation</span><ul><li>Encodes brightness-change polarity</li><li>Retains temporal activity information</li><li>Provides cues complementary to RGB appearance</li></ul></article></div>
+  </section>
+
+  <section id="results" class="section tint" aria-labelledby="results-title"><div class="wrap">
+    <div class="section-heading"><div><p class="eyebrow">04 / EXPERIMENTAL RESULTS</p><h2 id="results-title">Measuring understanding.</h2></div><span class="pill">Current SFT snapshot</span></div>
+    <p class="section-intro">Verified configurations on the same 305 test videos, with 915 VQA questions. Results are read from the repository’s checkpoint-420 evaluation CSVs; the final benchmark main table is pending.</p>
+    <div class="result-highlights"><div><strong>55.50</strong><span>Temporal mIoU · EventVAULT</span></div><div><strong>83.20</strong><span>VQA accuracy · EventVAULT</span></div><p>The strongest observed changes versus the historical RGB baseline are in temporal grounding and video question answering.</p></div>
+    <div class="table-scroll" role="region" aria-label="Experimental results, scroll horizontally on small screens" tabindex="0"><table><caption>Current module comparison · all scores × 100 · higher is better</caption><thead><tr><th scope="col">Configuration</th><th scope="col">Checkpoint</th><th scope="col">Classification<br>Sample F1 ↑</th><th scope="col">Temporal<br>mIoU ↑</th><th scope="col">Description<br>ROUGE-L ↑</th><th scope="col">VQA<br>Acc. ↑</th><th scope="col">VQA<br>Robust Acc. ↑</th></tr></thead><tbody><tr><th scope="row">RGB SFT baseline</th><td>420</td><td>50.28</td><td>48.54</td><td>20.99</td><td>80.41</td><td>73.55</td></tr><tr><th scope="row">Event-guided sampling + RGB</th><td>420</td><td><strong>51.42</strong></td><td>41.81</td><td><strong>21.37</strong></td><td>82.87</td><td>76.50</td></tr><tr><th scope="row">Uniform16 + RGB–event <small>Pending</small></th><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr><tr class="ours"><th scope="row">EventVAULT <small>Ours</small></th><td>420</td><td>50.93</td><td><strong>55.50</strong></td><td>21.14</td><td><strong>83.20</strong></td><td><strong>77.16</strong></td></tr></tbody></table></div>
+    <p class="caption">Zero-shot main results: pending curation. Unavailable configurations are shown as —. No result is inferred for an unfinished run.</p>
+    <details class="technical-details"><summary>Evaluation protocol &amp; scope</summary><div><p>Classification uses sample-averaged F1, not macro-F1. Temporal grounding uses the current evaluator’s mean video-level interval-union IoU, including its normal-video scoring rule. Description uses ROUGE-L from the documented comparison; a final GPT-score table is not available.</p><p>VQA accuracy aggregates option-permutation runs. Robust accuracy requires every cyclic option permutation for a question to be answered correctly. These are the same 915 questions, not additional independent questions.</p><p>All displayed completed configurations use checkpoint-420, but equal checkpoint indices alone do not establish matched training or visual-input budgets. These comparisons do not isolate a single causal contribution, establish statistical significance, or show illumination-stratified gains. Full-model macro-F1 does not improve; description gains are small and do not extend to every metric.</p></div></details>
+  </div></section>
+
+  <section id="qualitative" class="wrap section" aria-labelledby="qualitative-title"><div class="section-heading"><div><p class="eyebrow">05 / QUALITATIVE ANALYSIS</p><h2 id="qualitative-title">From observations to explanations.</h2></div><span class="pill">Coming soon</span></div><div class="placeholder"><span class="placeholder-icon" aria-hidden="true">▧</span><h3>Aligned comparisons are being prepared</h3><p>RGB frames · Event visualization · Ground truth · RGB baseline · Ours</p><p class="caption">The overview shows real source frames. Verified model-output comparisons will be added with their corresponding evidence.</p></div></section>
+
+  <section id="resources" class="section tint" aria-labelledby="resources-title"><div class="wrap"><div class="section-heading"><div><p class="eyebrow">06 / RESOURCES</p><h2 id="resources-title">Explore the project.</h2></div><p>Available code and<br>upcoming releases.</p></div><div class="resources-grid"><article class="resource-card"><span class="resource-symbol" aria-hidden="true">&lt;/&gt;</span><h3>Code</h3><p>Research implementation</p><span class="resource-status">Coming soon</span></article><article class="resource-card"><span class="resource-symbol" aria-hidden="true">↗</span><h3>Paper</h3><p>Manuscript &amp; supplementary</p><span class="resource-status">Coming soon</span></article><article class="resource-card"><span class="resource-symbol" aria-hidden="true">▦</span><h3>Dataset</h3><p>Benchmark data</p><span class="resource-status">Coming soon</span></article><article class="resource-card"><span class="resource-symbol" aria-hidden="true">≡</span><h3>Annotations</h3><p>Multi-task labels &amp; splits</p><span class="resource-status">Coming soon</span></article><article class="resource-card"><span class="resource-symbol" aria-hidden="true">◇</span><h3>Checkpoints</h3><p>Trained model weights</p><span class="resource-status">Coming soon</span></article><article class="resource-card"><span class="resource-symbol" aria-hidden="true">⌁</span><h3>Evaluation toolkit</h3><p>Packaged evaluation tools</p><span class="resource-status">Coming soon</span></article><article class="resource-card"><span class="resource-symbol" aria-hidden="true">▷</span><h3>Demo</h3><p>Interactive exploration</p><span class="resource-status">Coming soon</span></article></div></div></section>
+
+  <section id="citation" class="wrap section citation" aria-labelledby="citation-title"><div><p class="eyebrow">07 / CITATION</p><h2 id="citation-title">Cite VAULT.</h2><p>Citation will be available upon paper release.</p></div><div class="citation-box"><div><span>BibTeX</span><button id="copy-bibtex" type="button" disabled>Copy BibTeX</button></div><pre><code id="bibtex" data-available="false">Citation will be available upon paper release.</code></pre><p id="copy-status" class="sr-only" role="status"></p></div></section>
+</main>
+<footer class="footer"><div class="wrap"><a class="brand" href="#">VAULT<span class="status-dot"></span></a><p>Low-light video. Complementary evidence. Multi-task understanding.</p><a href="https://github.com/liuyr0910/VAULT">GitHub ↗</a></div></footer>
+<dialog id="image-dialog" aria-label="Enlarged project image"><button class="dialog-close" type="button" aria-label="Close enlarged image">Close ×</button><img id="dialog-image" alt=""><p id="dialog-caption"></p></dialog>
+</body>
+</html>
