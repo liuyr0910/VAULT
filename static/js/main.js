@@ -1,19 +1,8 @@
 'use strict';
-document.documentElement.classList.add('js');
-const toggle = document.querySelector('.menu-toggle');
-const links = document.querySelector('.nav-links');
-function closeMenu() { links.classList.remove('open'); toggle.setAttribute('aria-expanded', 'false'); }
-toggle.addEventListener('click', () => { const open = links.classList.toggle('open'); toggle.setAttribute('aria-expanded', String(open)); });
-links.addEventListener('click', event => { if (event.target.closest('a')) closeMenu(); });
-document.addEventListener('keydown', event => { if (event.key === 'Escape' && links.classList.contains('open')) { closeMenu(); toggle.focus(); } });
-if ('IntersectionObserver' in window) {
-  const observer = new IntersectionObserver(entries => {
-    for (const entry of entries) if (entry.isIntersecting) {
-      links.querySelectorAll('a').forEach(a => { if (a.hash === '#' + entry.target.id) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current'); });
-    }
-  }, { rootMargin: '-10% 0px -65% 0px', threshold: 0 });
-  document.querySelectorAll('main section[id]').forEach(section => observer.observe(section));
-}
+const menu = document.querySelector('.nav-menu');
+menu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => { menu.open = false; }));
+document.addEventListener('click', event => { if (!menu.contains(event.target)) menu.open = false; });
+document.addEventListener('keydown', event => { if (event.key === 'Escape' && menu.open) { menu.open = false; menu.querySelector('summary').focus(); } });
 const dialog = document.querySelector('#image-dialog');
 const enlarged = document.querySelector('#dialog-image');
 if (typeof dialog.showModal === 'function') {
