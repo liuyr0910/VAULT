@@ -51,33 +51,8 @@ strong { color: var(--heading); font-weight: 700; }
 .dataset-facts { display: grid; grid-template-columns: repeat(4, 1fr); padding: 27px 0; margin: 24px 0 28px; border-block: 1px solid #ddd; text-align: center; }
 .dataset-facts strong { display: block; font-family: "Google Sans", Arial, sans-serif; font-size: 32px; font-weight: 500; }
 .dataset-facts span { font-size: 13px; }
-.statistics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: center; }
-.statistics-right { display: grid; gap: 22px; }
-.subfigure-label { text-align: center; font-size: 14px; margin-top: 8px; }
 .statistics-figure { margin-bottom: 22px; }
 .method-figure { margin: 32px 0 26px; }
-.method-input { text-align: center; width: fit-content; max-width: 100%; margin: auto; border: 1px solid #666; padding: 10px 32px; font-weight: 600; }
-.flow-arrow { font-size: 27px; line-height: 1.5; text-align: center; color: #666; }
-.method-stages { display: grid; grid-template-columns: 1fr 24px 1fr 24px 1fr; align-items: center; }
-.method-stage { min-height: 213px; border: 1px solid; padding: 18px 12px 15px; text-align: center; }
-.stage-tea { border-color: #a2b9cf; background: #f1f6fa; }
-.stage-sel { border-color: #9abda9; background: #f1f7f3; }
-.stage-aeer { border-color: #c5afd1; background: #f8f4fa; }
-.method-stage h3 { font-family: "Google Sans", Arial, sans-serif; }
-.method-stage p { margin: 9px auto 13px; font-size: 13px; min-height: 39px; max-width: 220px; }
-.method-stage small { display: block; font-size: 11px; margin-top: 14px; }
-.stage-arrow { text-align: center; color: #666; font-size: 24px; }
-.timeline { display: flex; align-items: end; justify-content: center; gap: 6px; height: 42px; border-bottom: 1px solid #93a9bc; margin: 0 14px; }
-.timeline i { display: block; width: 9px; height: 9px; background: #859fb7; }
-.timeline i:nth-child(3n) { height: 25px; background: #527ca0; }
-.timeline i:nth-child(4n) { height: 38px; background: #527ca0; }
-.roi-schematic { position: relative; margin: auto; width: 92px; height: 42px; border: 1px solid #80a58f; background: repeating-linear-gradient(90deg, transparent 0 14px, #dae7df 14px 15px); }
-.roi-schematic span { position: absolute; width: 36px; height: 28px; left: 32px; top: 7px; border: 2px solid #5c9471; background: #c9e0d3aa; }
-.event-stages { display: flex; justify-content: center; gap: 7px; height: 42px; align-items: center; }
-.event-stages span { border: 1px solid #bca8c7; padding: 8px 7px; font-size: 11px; background: white; }
-.method-output { border: 1px solid #aaa; padding: 13px 22px; max-width: 610px; margin: 0 auto; text-align: center; background: #fafafa; }
-.method-output strong { display: block; font-size: 16px; }
-.method-output span { display: block; margin-top: 6px; font-size: 13px; }
 .technical-details { margin-top: 22px; font-size: 14px; }
 .technical-details summary { cursor: pointer; color: #3273dc; padding: 8px 0; }
 .technical-details > p, .technical-details > div { margin-top: 8px; padding-left: 18px; line-height: 1.65; }
@@ -126,16 +101,14 @@ dialog p { margin-top: 12px; font-size: 13px; }
   .prose { text-align: left; }
   .dataset-facts { grid-template-columns: 1fr 1fr; gap: 22px 10px; }
   .dataset-facts strong { font-size: 29px; }
-  .statistics-grid { grid-template-columns: 1fr; gap: 25px; }
-  .statistics-grid > div:first-child img { max-height: 570px; object-fit: contain; }
-  .method-stages { grid-template-columns: 1fr; }
-  .method-stage { min-height: auto; padding: 18px; max-width: 400px; width: 100%; margin: auto; }
-  .method-stage p { min-height: 0; }
-  .stage-arrow { transform: rotate(90deg); line-height: 1.5; }
-  .timeline { max-width: 230px; margin: auto; }
-  .method-output { padding: 12px; }
   .footer { font-size: 13px; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 }
+
+/* The uploaded paper figures retain their original aspect ratios and transparency. */
+.publication-figure .image-zoom { background: #fff; }
+.publication-figure img { width: 100%; height: auto; object-fit: contain; }
+.figure-tools { text-align: center; margin-top: 10px; font-size: 13px; }
+dialog { background: #fff; color: #4a4a4a; }

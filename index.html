@@ -60,9 +60,12 @@
     <h2>The VAULT Benchmark</h2>
     <div class="prose"><p>VAULT brings four tasks into a shared evaluation setting: <strong>description</strong> of anomalous behavior, multi-label <strong>classification</strong>, <strong>temporal grounding</strong> of anomaly intervals, and <strong>video question answering</strong>. The current annotation split contains <strong>1,115 training</strong>, <strong>356 validation</strong>, and <strong>305 test</strong> videos, with disjoint video paths.</p></div>
     <div class="dataset-facts" aria-label="Dataset statistics"><div><strong>1,776</strong><span>Videos</span></div><div><strong>25 + 1</strong><span>Anomaly + normal classes</span></div><div><strong>4</strong><span>Understanding tasks</span></div><div><strong>5,328</strong><span>VQA questions</span></div></div>
-    <figure class="statistics-figure">
-      <div class="statistics-grid"><div><button class="image-zoom" type="button" aria-label="Enlarge category distribution"><img loading="lazy" src="static/images/stats_categories.png" width="1440" height="1184" alt="Multi-label category distribution over 1776 videos, including 284 fighting videos and 256 traffic accident videos."></button><p class="subfigure-label">(a) Category distribution</p></div><div class="statistics-right"><div><button class="image-zoom" type="button" aria-label="Enlarge illumination distribution"><img loading="lazy" src="static/images/stats_illumination.png" alt="Project illumination-score distribution over the annotated videos."></button><p class="subfigure-label">(b) Illumination distribution</p></div><div><button class="image-zoom" type="button" aria-label="Enlarge video duration distribution"><img loading="lazy" src="static/images/stats_duration.png" alt="Video duration histogram, with short, medium, and long video groups."></button><p class="subfigure-label">(c) Video duration distribution</p></div></div></div>
-      <figcaption class="figure-caption"><strong>Dataset statistics.</strong> Category counts use multi-label annotations, so a video can contribute to more than one category. Illumination and duration plots are existing project visualizations of the matching 1,776-video annotation set. The illumination score is a project-defined measure, not calibrated lux.</figcaption>
+    <figure class="statistics-figure publication-figure">
+      <button class="image-zoom" type="button" aria-label="Enlarge the VAULT dataset overview">
+        <img loading="lazy" decoding="async" src="static/images/dataset4.png" width="5132" height="2488" alt="VAULT dataset overview: grouped anomaly categories, video duration distribution, scene and time-of-day composition, and illumination-score distribution.">
+      </button>
+      <figcaption class="figure-caption"><strong>VAULT dataset overview.</strong> The figure summarizes anomaly categories, video durations, scene and time-of-day composition, and illumination scores. Categories are organized into violence and conflict, property crime, traffic and transport, disasters and hazards, accidents, and normal videos. The illumination score is a project-defined measure, not calibrated lux.</figcaption>
+      <p class="figure-tools"><a href="static/images/dataset4.png" target="_blank" rel="noopener noreferrer">View full-resolution dataset figure ↗</a></p>
     </figure>
     <div class="prose"><p>Scene annotations include 1,175 outdoor, 567 indoor, and 34 mixed-scene videos. Time-of-day labels include 1,031 night, 744 day, and one uncertain-time video. These context labels are distinct from measured illumination.</p></div>
   </section>
@@ -70,19 +73,12 @@
   <section id="method" class="section container">
     <h2>Method Overview</h2>
     <p class="prose">Given an RGB video and its aligned simulated event stream, TEA selects observation times, SEL identifies relevant spatial regions, and AEER constructs event images aligned with the selected RGB evidence. The combined observations are used for multi-task instruction tuning.</p>
-    <figure class="method-figure">
-      <div class="method-input">RGB video + aligned event stream</div>
-      <div class="flow-arrow" aria-hidden="true">↓</div>
-      <div class="method-stages">
-        <div class="method-stage stage-tea"><h3>TEA</h3><p>Temporal Evidence Allocation</p><div class="timeline" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><small>Global context + focused observations</small></div>
-        <span class="stage-arrow" aria-hidden="true">→</span>
-        <div class="method-stage stage-sel"><h3>SEL</h3><p>Spatial Evidence Localization</p><div class="roi-schematic" aria-hidden="true"><span></span></div><small>Event-guided regions + full-frame fallback</small></div>
-        <span class="stage-arrow" aria-hidden="true">→</span>
-        <div class="method-stage stage-aeer"><h3>AEER</h3><p>Adaptive Event Evidence Representation</p><div class="event-stages"><span>Early</span><span>Middle</span><span>Late</span></div><small>Aligned temporal windows + polarity images</small></div>
-      </div>
-      <div class="flow-arrow" aria-hidden="true">↓</div>
-      <div class="method-output"><strong>Joint RGB–event reasoning</strong><span>Description · Classification · Temporal grounding · Video QA</span></div>
-      <figcaption class="figure-caption"><strong>Framework overview.</strong> TEA allocates RGB observations across time; SEL determines their spatial regions; AEER provides aligned event images. The schematic illustrates processing stages, not measured event activity or predicted anomaly regions.</figcaption>
+    <figure class="method-figure publication-figure">
+      <button class="image-zoom" type="button" aria-label="Enlarge the TEA, SEL, and AEER method pipeline">
+        <img loading="lazy" decoding="async" src="static/images/pipeline.png" width="4513" height="2210" alt="VAULT method pipeline: RGB video and v2e events feed TEA temporal selection and SEL spatial localization; AEER constructs adaptive event windows and early, middle, and late event images for LoRA-based multimodal reasoning across four tasks.">
+      </button>
+      <figcaption class="figure-caption"><strong>Method pipeline.</strong> TEA addresses <em>when</em> to observe by allocating temporal evidence; SEL addresses <em>where</em> to observe by selecting spatial regions or retaining full frames. AEER adapts event windows and decomposes the evidence into early, middle, and late stages. RGB observations, event images, and task instructions are supplied to the multimodal model for temporal grounding, classification, description, and VQA. Example answers in the diagram illustrate the task formats.</figcaption>
+      <p class="figure-tools"><a href="static/images/pipeline.png" target="_blank" rel="noopener noreferrer">View full-resolution method pipeline ↗</a></p>
     </figure>
     <div class="prose"><p><strong>Temporal and spatial evidence.</strong> TEA and SEL share an event-activity histogram over 96 temporal bins and a 12 × 16 spatial grid. Global observations preserve scene context, while focused observations cover active segments. Event activity scores guide sampling; they are not anomaly probabilities.</p><p><strong>Event evidence representation.</strong> AEER selects up to three event anchors and renders early, middle, and late polarity images for each. The framework uses Qwen3-VL’s existing visual pathway with language-model LoRA, while freezing the vision backbone and projection module.</p><p><strong>Why event evidence?</strong> Brightness-change representations can supply motion-sensitive cues when RGB appearance is ambiguous. Because current events are simulated from source RGB video, these experiments do not establish the benefits of independently captured event-camera data or illumination invariance.</p></div>
     <details class="technical-details"><summary>Implementation and experimental scope</summary><p>Current entry points request 16–24 RGB observations; allocation and deduplication can leave fewer. AEER adds at most nine event images. There is no dedicated event encoder or auxiliary event loss. Current inference uses the v3 anchor-selection policy, whereas the historical full-model training cache records v2; identical selection policies at training and inference are not assumed.</p></details>
