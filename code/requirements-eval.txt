@@ -1,0 +1,6 @@
+numpy>=1.26
+pandas>=2.2
+scikit-learn>=1.6
+tqdm>=4.66
+nltk>=3.9
+pycocoevalcap==1.2

@@ -1,0 +1,68 @@
+import transformers
+from dataclasses import dataclass, field
+from typing import List, Optional
+
+
+@dataclass
+class ModelArguments:
+    model_name_or_path: Optional[str] = field(
+        default="Qwen/Qwen2.5-VL-3B-Instruct"
+    )
+    tune_mm_llm: bool = field(default=False)
+    tune_mm_mlp: bool = field(default=False)
+    tune_mm_vision: bool = field(default=False)
+
+
+@dataclass
+class DataArguments:
+    dataset_use: str = field(default="")
+    data_path: Optional[str] = field(
+        default=None,
+        metadata={"help": "Path to a local JSON/JSONL SFT dataset."},
+    )
+    data_flatten: bool = field(default=False)
+    data_packing: bool = field(default=False)
+    base_interval: int = field(default=2)
+    max_pixels: int = field(default=1280 * 28 * 28)
+    min_pixels: int = field(default=256 * 28 * 28)
+    video_max_frames: Optional[int] = field(default=8)
+    video_min_frames: Optional[int] = field(default=4)
+    video_max_pixels: int = field(default=1024 * 28 * 28)
+    video_min_pixels: int = field(default=256 * 28 * 28)
+    video_fps: float = field(default=2)
+
+
+@dataclass
+class TrainingArguments(transformers.TrainingArguments):
+    cache_dir: Optional[str] = field(default=None)
+    optim: str = field(default="adamw_torch")
+    model_max_length: int = field(
+        default=2048,
+        metadata={
+            "help": "Maximum sequence length. Sequences are right padded and truncated if needed."
+        },
+    )
+    mm_projector_lr: Optional[float] = None
+    vision_tower_lr: Optional[float] = None
+    remove_unused_columns: bool = field(default=False)
+
+
+@dataclass
+class LoraArguments:
+    use_lora: bool = field(default=False)
+    lora_r: int = 64
+    lora_alpha: int = 16
+    lora_dropout: float = 0.05
+    lora_target_modules: List[str] = field(
+        default_factory=lambda: [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "gate_proj",
+            "up_proj",
+            "down_proj",
+        ]
+    )
+    lora_bias: str = "none"
+    lora_modules_to_save: Optional[List[str]] = field(default=None)

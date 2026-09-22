@@ -1,0 +1,14 @@
+{
+  "bf16": {"enabled": "auto"},
+  "fp16": {"enabled": "auto", "loss_scale": 0, "initial_scale_power": 16},
+  "train_micro_batch_size_per_gpu": "auto",
+  "train_batch_size": "auto",
+  "gradient_accumulation_steps": "auto",
+  "zero_optimization": {
+    "stage": 2,
+    "overlap_comm": false,
+    "contiguous_gradients": true,
+    "reduce_bucket_size": 20000000,
+    "allgather_bucket_size": 20000000
+  }
+}

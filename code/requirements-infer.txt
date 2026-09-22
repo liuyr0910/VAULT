@@ -1,0 +1,8 @@
+# Prefer a separate environment when vLLM's Torch requirements differ.
+vllm==0.13.0
+transformers==4.57.0
+numpy==2.2.6
+Pillow==11.3.0
+decord==0.6.0
+tqdm==4.67.1
+h5py>=3.12,<4

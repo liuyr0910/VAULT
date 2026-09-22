@@ -1,0 +1,19 @@
+{
+  "max_groups": 3,
+  "frame_windows": [
+    3,
+    6,
+    12,
+    24,
+    48
+  ],
+  "target_events_per_pixel": 1.0,
+  "representation": "gray_pair",
+  "sensor_width": 240,
+  "sensor_height": 180,
+  "timestamp_divisor": 1000000.0,
+  "max_read_events": 4000000,
+  "filter_inactive_anchors": true,
+  "one_anchor_per_segment": true,
+  "balanced_event_note": false
+}
