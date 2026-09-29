@@ -6,33 +6,21 @@ an event frame.  It converts an H5 stream with rows
 """
 
 from __future__ import annotations
-
 import math
-import os
-import sys
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional, Sequence, Tuple
-
 import numpy as np
 from PIL import Image
-
-try:
-    from decord import VideoReader, cpu
-except ImportError:  # pragma: no cover - exercised only in the inference env
-    VideoReader = None
-    cpu = None
-
+from decord import VideoReader, cpu
 
 NormalizedBox = Tuple[float, float, float, float]
 
 
 def _import_h5py():
-    try:
-        import h5py
-        return h5py
-    except ImportError as exc:
-        raise ImportError("Install h5py in the active environment for event sampling") from exc
+    import h5py
+
+    return h5py
 
 
 @dataclass(frozen=True)
@@ -42,7 +30,7 @@ class EventSamplerConfig:
     spatial_grid_height: int = 12
     sensor_width: int = 240
     sensor_height: int = 180
-    timestamp_divisor: float = 1_000_000.0
+    timestamp_divisor: float = 1000000.0
     activity_threshold: float = 0.35
     min_temporal_contrast: float = 0.08
     merge_gap_bins: int = 1
@@ -53,25 +41,11 @@ class EventSamplerConfig:
     global_stride_sec: float = 30.0
     focus_stride_sec: float = 2.5
     fallback_stride_sec: float = 6.0
-    roi_mass_fraction: float = 0.80
+    roi_mass_fraction: float = 0.8
     roi_margin: float = 0.15
     min_crop_side: float = 0.25
-    max_crop_area: float = 0.80
-    chunk_events: int = 500_000
-
-    def __post_init__(self) -> None:
-        if self.analysis_bins < 4:
-            raise ValueError("analysis_bins must be at least 4")
-        if self.spatial_grid_width <= 0 or self.spatial_grid_height <= 0:
-            raise ValueError("spatial grid dimensions must be positive")
-        if self.sensor_width <= 0 or self.sensor_height <= 0:
-            raise ValueError("sensor dimensions must be positive")
-        if self.timestamp_divisor < 0:
-            raise ValueError("timestamp_divisor must be non-negative")
-        if not 1 <= self.min_frames <= self.max_frames:
-            raise ValueError("expected 1 <= min_frames <= max_frames")
-        if not 0.0 < self.roi_mass_fraction <= 1.0:
-            raise ValueError("roi_mass_fraction must be in (0, 1]")
+    max_crop_area: float = 0.8
+    chunk_events: int = 500000
 
 
 @dataclass(frozen=True)
@@ -108,8 +82,12 @@ class EventAnalysis:
             "temporal_contrast": round(float(self.temporal_contrast), 6),
             "active_bin_ratio": round(float(np.mean(self.active_mask)), 6),
             "active_segments": [asdict(segment) for segment in self.segments],
-            "score_min": round(float(np.min(self.scores)) if self.scores.size else 0.0, 6),
-            "score_max": round(float(np.max(self.scores)) if self.scores.size else 0.0, 6),
+            "score_min": round(
+                float(np.min(self.scores)) if self.scores.size else 0.0, 6
+            ),
+            "score_max": round(
+                float(np.max(self.scores)) if self.scores.size else 0.0, 6
+            ),
         }
 
 
@@ -154,15 +132,23 @@ class RGBSample:
     role: str
     roi: Optional[NormalizedBox]
     pixel_box: Optional[Tuple[int, int, int, int]]
+    spatial_view: str = "crop"
+    full_image: Optional[Image.Image] = None
+    source_size: Optional[Tuple[int, int]] = None
 
     def metadata(self) -> Dict:
-        return {
+        result = {
             "timestamp": round(float(self.timestamp), 4),
             "frame_index": int(self.frame_index),
             "role": self.role,
             "roi": list(self.roi) if self.roi is not None else None,
             "pixel_box": list(self.pixel_box) if self.pixel_box is not None else None,
         }
+        if self.spatial_view != "crop":
+            result.update(
+                spatial_view=self.spatial_view, source_size=list(self.source_size)
+            )
+        return result
 
 
 class EventH5Index:
@@ -178,11 +164,13 @@ class EventH5Index:
 
     @property
     def indexed_count(self) -> int:
-        return sum(len(paths) for paths in self.by_stem.values())
+        return sum((len(paths) for paths in self.by_stem.values()))
 
     def resolve(self, rgb_path: str, source: Optional[Dict] = None) -> Optional[str]:
         source = source or {}
-        explicit = source.get("event") or source.get("event_path") or source.get("event_h5")
+        explicit = (
+            source.get("event") or source.get("event_path") or source.get("event_h5")
+        )
         if isinstance(explicit, list):
             explicit = explicit[0] if explicit else None
         if explicit:
@@ -191,35 +179,32 @@ class EventH5Index:
                 candidate = self.root / candidate
             if candidate.is_file() and candidate.suffix.lower() in {".h5", ".hdf5"}:
                 return str(candidate.resolve())
-
         stem = Path(rgb_path).stem
         candidates = self.by_stem.get(stem, [])
         if not candidates:
             return None
-        candidates = sorted(candidates, key=lambda path: (path.parent.name != stem, str(path)))
+        candidates = sorted(
+            candidates, key=lambda path: (path.parent.name != stem, str(path))
+        )
         return str(candidates[0])
 
 
 def get_video_metadata(video_path: str) -> Tuple[int, float, float]:
-    if VideoReader is None:
-        raise ImportError("decord is required for RGB video sampling")
-    if not os.path.exists(video_path):
-        raise FileNotFoundError(video_path)
     reader = VideoReader(video_path, ctx=cpu(0))
     total_frames = len(reader)
     fps = float(reader.get_avg_fps())
-    if total_frames <= 0 or fps <= 0:
-        raise ValueError(f"Invalid video metadata: {video_path}")
-    return total_frames, fps, total_frames / fps
+    return (total_frames, fps, total_frames / fps)
 
 
 def _timestamp_divisor(last_timestamp: float, duration: float) -> float:
     if duration <= 0 or last_timestamp <= 0:
-        return 1_000_000.0
-    candidates = (1.0, 1_000.0, 1_000_000.0, 1_000_000_000.0)
+        return 1000000.0
+    candidates = (1.0, 1000.0, 1000000.0, 1000000000.0)
     return min(
         candidates,
-        key=lambda divisor: abs(math.log(max(last_timestamp / divisor, 1e-9) / duration)),
+        key=lambda divisor: abs(
+            math.log(max(last_timestamp / divisor, 1e-09) / duration)
+        ),
     )
 
 
@@ -227,7 +212,7 @@ def _smooth_1d(values: np.ndarray) -> np.ndarray:
     if len(values) < 3:
         return values.astype(np.float64, copy=True)
     padded = np.pad(values.astype(np.float64), (1, 1), mode="edge")
-    return 0.25 * padded[:-2] + 0.50 * padded[1:-1] + 0.25 * padded[2:]
+    return 0.25 * padded[:-2] + 0.5 * padded[1:-1] + 0.25 * padded[2:]
 
 
 def _fill_short_gaps(mask: np.ndarray, max_gap: int) -> np.ndarray:
@@ -240,51 +225,43 @@ def _fill_short_gaps(mask: np.ndarray, max_gap: int) -> np.ndarray:
             index += 1
             continue
         start = index
-        while index < len(result) and not result[index]:
+        while index < len(result) and (not result[index]):
             index += 1
-        if start > 0 and index < len(result) and index - start <= max_gap:
+        if start > 0 and index < len(result) and (index - start <= max_gap):
             result[start:index] = True
     return result
 
 
 def _score_histogram(
-    spatial_counts: np.ndarray,
-    config: EventSamplerConfig,
+    spatial_counts: np.ndarray, config: EventSamplerConfig
 ) -> Tuple[np.ndarray, np.ndarray, float]:
     counts = spatial_counts.sum(axis=(1, 2)).astype(np.float64)
     activity = _smooth_1d(np.log1p(counts))
     low = float(np.percentile(activity, 20))
     high = float(np.percentile(activity, 90))
     spread = max(high - low, 0.0)
-    temporal_contrast = spread / max(abs(high), 1e-6)
-
-    if spread <= 1e-8 or temporal_contrast < config.min_temporal_contrast:
+    temporal_contrast = spread / max(abs(high), 1e-06)
+    if spread <= 1e-08 or temporal_contrast < config.min_temporal_contrast:
         scores = np.zeros_like(activity)
-        return scores, np.zeros_like(activity, dtype=bool), temporal_contrast
-
+        return (scores, np.zeros_like(activity, dtype=bool), temporal_contrast)
     temporal = np.clip((activity - low) / spread, 0.0, 1.0)
     flat = spatial_counts.reshape(len(spatial_counts), -1).astype(np.float64)
-    top_k = max(1, int(math.ceil(flat.shape[1] * 0.10)))
+    top_k = max(1, int(math.ceil(flat.shape[1] * 0.1)))
     top_share = np.zeros(len(flat), dtype=np.float64)
     totals = flat.sum(axis=1)
     valid = totals > 0
     if np.any(valid):
         partitioned = np.partition(flat[valid], flat.shape[1] - top_k, axis=1)
         top_share[valid] = partitioned[:, -top_k:].sum(axis=1) / totals[valid]
-    focus = np.clip((top_share - 0.10) / 0.90, 0.0, 1.0)
-
-    # Temporal prominence defines the boundary; spatial concentration is only
-    # a small confidence boost so large fires or crowds are not suppressed.
-    scores = np.clip(temporal * (0.80 + 0.20 * focus), 0.0, 1.0)
+    focus = np.clip((top_share - 0.1) / 0.9, 0.0, 1.0)
+    scores = np.clip(temporal * (0.8 + 0.2 * focus), 0.0, 1.0)
     active = (scores >= config.activity_threshold) & (counts > 0)
     active = _fill_short_gaps(active, config.merge_gap_bins)
-    return scores, active, temporal_contrast
+    return (scores, active, temporal_contrast)
 
 
 def _segments_from_mask(
-    active: np.ndarray,
-    scores: np.ndarray,
-    duration: float,
+    active: np.ndarray, scores: np.ndarray, duration: float
 ) -> Tuple[ActiveSegment, ...]:
     bin_duration = duration / max(len(active), 1)
     segments: List[ActiveSegment] = []
@@ -311,9 +288,7 @@ def _segments_from_mask(
 
 
 def analyze_event_h5(
-    path: str,
-    duration: float,
-    config: EventSamplerConfig,
+    path: str, duration: float, config: EventSamplerConfig
 ) -> EventAnalysis:
     """Aggregate a raw H5 stream into temporal scores and a coarse spatial grid."""
     h5py = _import_h5py()
@@ -322,8 +297,6 @@ def analyze_event_h5(
         dtype=np.int64,
     )
     with h5py.File(path, "r") as handle:
-        if "events" not in handle:
-            raise KeyError(f"H5 file does not contain an 'events' dataset: {path}")
         events = handle["events"]
         event_count = int(events.shape[0])
         if event_count <= 0:
@@ -331,7 +304,7 @@ def analyze_event_h5(
             return EventAnalysis(
                 duration=duration,
                 event_count=0,
-                timestamp_divisor=config.timestamp_divisor or 1_000_000.0,
+                timestamp_divisor=config.timestamp_divisor or 1000000.0,
                 temporal_counts=spatial.sum(axis=(1, 2)),
                 spatial_counts=spatial,
                 scores=scores,
@@ -339,35 +312,38 @@ def analyze_event_h5(
                 segments=(),
                 temporal_contrast=contrast,
             )
-
-        if len(events.shape) != 2 or events.shape[1] < 3:
-            raise ValueError(f"Expected events [N,4], got {events.shape} in {path}")
         last_timestamp = float(events[event_count - 1, 0])
-        divisor = config.timestamp_divisor or _timestamp_divisor(last_timestamp, duration)
-
+        divisor = config.timestamp_divisor or _timestamp_divisor(
+            last_timestamp, duration
+        )
         for start in range(0, event_count, config.chunk_events):
             stop = min(event_count, start + config.chunk_events)
             chunk = np.asarray(events[start:stop, :3])
             seconds = chunk[:, 0].astype(np.float64) / divisor
-            valid = (seconds >= 0.0) & (seconds <= duration + 1e-6)
+            valid = (seconds >= 0.0) & (seconds <= duration + 1e-06)
             if not np.any(valid):
                 continue
             seconds = seconds[valid]
             x = chunk[valid, 1].astype(np.float64)
             y = chunk[valid, 2].astype(np.float64)
-            temporal_bin = np.floor(seconds * config.analysis_bins / max(duration, 1e-9)).astype(np.int64)
+            temporal_bin = np.floor(
+                seconds * config.analysis_bins / max(duration, 1e-09)
+            ).astype(np.int64)
             temporal_bin = np.clip(temporal_bin, 0, config.analysis_bins - 1)
-            grid_x = np.floor(x * config.spatial_grid_width / config.sensor_width).astype(np.int64)
-            grid_y = np.floor(y * config.spatial_grid_height / config.sensor_height).astype(np.int64)
+            grid_x = np.floor(
+                x * config.spatial_grid_width / config.sensor_width
+            ).astype(np.int64)
+            grid_y = np.floor(
+                y * config.spatial_grid_height / config.sensor_height
+            ).astype(np.int64)
             grid_x = np.clip(grid_x, 0, config.spatial_grid_width - 1)
             grid_y = np.clip(grid_y, 0, config.spatial_grid_height - 1)
             flat_index = (
-                (temporal_bin * config.spatial_grid_height + grid_y)
-                * config.spatial_grid_width
-                + grid_x
+                temporal_bin * config.spatial_grid_height + grid_y
+            ) * config.spatial_grid_width + grid_x
+            spatial += np.bincount(flat_index, minlength=spatial.size).reshape(
+                spatial.shape
             )
-            spatial += np.bincount(flat_index, minlength=spatial.size).reshape(spatial.shape)
-
     scores, active, contrast = _score_histogram(spatial, config)
     segments = _segments_from_mask(active, scores, duration)
     return EventAnalysis(
@@ -387,7 +363,9 @@ def _bounded_count(value: int, low: int, high: int) -> int:
     return max(low, min(high, int(value)))
 
 
-def _allocate_counts(weights: Sequence[float], total: int, minimum: int = 1) -> List[int]:
+def _allocate_counts(
+    weights: Sequence[float], total: int, minimum: int = 1
+) -> List[int]:
     if not weights or total <= 0:
         return [0] * len(weights)
     counts = [0] * len(weights)
@@ -396,7 +374,6 @@ def _allocate_counts(weights: Sequence[float], total: int, minimum: int = 1) -> 
         for idx in order[:total]:
             counts[idx] = 1
         return counts
-
     counts = [minimum] * len(weights)
     remaining = total - sum(counts)
     weight_array = np.asarray(weights, dtype=np.float64)
@@ -412,7 +389,9 @@ def _allocate_counts(weights: Sequence[float], total: int, minimum: int = 1) -> 
     return counts
 
 
-def _expand_interval(center: float, width: float, minimum: float) -> Tuple[float, float]:
+def _expand_interval(
+    center: float, width: float, minimum: float
+) -> Tuple[float, float]:
     width = max(width, minimum)
     low = center - width / 2.0
     high = center + width / 2.0
@@ -422,13 +401,11 @@ def _expand_interval(center: float, width: float, minimum: float) -> Tuple[float
     if high > 1.0:
         low -= high - 1.0
         high = 1.0
-    return max(0.0, low), min(1.0, high)
+    return (max(0.0, low), min(1.0, high))
 
 
 def spatial_roi(
-    spatial_counts: np.ndarray,
-    event_bin: int,
-    config: EventSamplerConfig,
+    spatial_counts: np.ndarray, event_bin: int, config: EventSamplerConfig
 ) -> Optional[NormalizedBox]:
     """Return the smallest stable box covering most event mass near one bin."""
     start = max(0, event_bin - 1)
@@ -437,7 +414,6 @@ def spatial_roi(
     total = float(cells.sum())
     if total <= 0:
         return None
-
     flat = cells.ravel()
     order = np.argsort(-flat)
     cumulative = np.cumsum(flat[order])
@@ -446,13 +422,11 @@ def spatial_roi(
     kept = kept[flat[kept] > 0]
     if len(kept) < 2:
         return None
-
     rows, cols = np.unravel_index(kept, cells.shape)
     left = float(cols.min()) / config.spatial_grid_width
     right = float(cols.max() + 1) / config.spatial_grid_width
     top = float(rows.min()) / config.spatial_grid_height
     bottom = float(rows.max() + 1) / config.spatial_grid_height
-
     width = right - left
     height = bottom - top
     left, right = _expand_interval(
@@ -471,10 +445,7 @@ def spatial_roi(
 
 
 def _segment_sample_times(
-    segment: ActiveSegment,
-    scores: np.ndarray,
-    duration: float,
-    count: int,
+    segment: ActiveSegment, scores: np.ndarray, duration: float, count: int
 ) -> List[float]:
     if count <= 0:
         return []
@@ -483,25 +454,24 @@ def _segment_sample_times(
     centers = (bins.astype(np.float64) + 0.5) * bin_duration
     if count == 1:
         return [float(centers[int(np.argmax(scores[bins]))])]
-
-    weights = np.maximum(scores[bins], 1e-6)
+    weights = np.maximum(scores[bins], 1e-06)
     cdf = np.cumsum(weights) / weights.sum()
     quantiles = (np.arange(count, dtype=np.float64) + 0.5) / count
-    weighted = np.array([centers[min(int(np.searchsorted(cdf, q)), len(centers) - 1)] for q in quantiles])
+    weighted = np.array(
+        [
+            centers[min(int(np.searchsorted(cdf, q)), len(centers) - 1)]
+            for q in quantiles
+        ]
+    )
     uniform = np.linspace(segment.start_sec, segment.end_sec, count + 2)[1:-1]
     blended = np.sort(0.5 * weighted + 0.5 * uniform)
     return [float(np.clip(value, 0.0, duration)) for value in blended]
 
 
 def build_sampling_plan(
-    analysis: Optional[EventAnalysis],
-    duration: float,
-    config: EventSamplerConfig,
+    analysis: Optional[EventAnalysis], duration: float, config: EventSamplerConfig
 ) -> SamplingPlan:
     """Build a variable-length mixture of global RGB frames and focused crops."""
-    if duration <= 0:
-        raise ValueError("duration must be positive")
-
     segments = analysis.segments if analysis is not None else ()
     if not segments:
         count = _bounded_count(
@@ -510,31 +480,40 @@ def build_sampling_plan(
             config.max_frames,
         )
         timestamps = np.linspace(0.0, duration, count)
-        requests = tuple(FrameRequest(float(ts), "uniform_fallback") for ts in timestamps)
-        summary = analysis.summary() if analysis is not None else {"reason": "event_h5_missing"}
+        requests = tuple(
+            (FrameRequest(float(ts), "uniform_fallback") for ts in timestamps)
+        )
+        summary = (
+            analysis.summary()
+            if analysis is not None
+            else {"reason": "event_h5_missing"}
+        )
         return SamplingPlan(duration, "uniform_fallback", requests, summary)
-
     global_count = _bounded_count(
         int(math.ceil(duration / config.global_stride_sec)) + 2,
         config.min_global_frames,
         config.max_global_frames,
     )
     desired_focus = sum(
-        max(2, int(math.ceil(segment.duration / config.focus_stride_sec)))
-        for segment in segments
+        (
+            max(2, int(math.ceil(segment.duration / config.focus_stride_sec)))
+            for segment in segments
+        )
     )
-    total = _bounded_count(global_count + desired_focus, config.min_frames, config.max_frames)
+    total = _bounded_count(
+        global_count + desired_focus, config.min_frames, config.max_frames
+    )
     focus_count = max(0, total - global_count)
-
     global_times = np.linspace(0.0, duration, global_count)
     requests: List[FrameRequest] = [
         FrameRequest(float(timestamp), "global_context") for timestamp in global_times
     ]
-
     weights = [segment.duration * (0.5 + segment.score_mass) for segment in segments]
     allocations = _allocate_counts(weights, focus_count, minimum=2)
     for segment, count in zip(segments, allocations):
-        for timestamp in _segment_sample_times(segment, analysis.scores, duration, count):
+        for timestamp in _segment_sample_times(
+            segment, analysis.scores, duration, count
+        ):
             event_bin = min(
                 len(analysis.scores) - 1,
                 max(0, int(timestamp * len(analysis.scores) / duration)),
@@ -547,9 +526,10 @@ def build_sampling_plan(
                     event_bin=event_bin,
                 )
             )
-
     role_order = {"global_context": 0, "event_guided_focus": 1}
-    requests.sort(key=lambda request: (request.timestamp, role_order.get(request.role, 2)))
+    requests.sort(
+        key=lambda request: (request.timestamp, role_order.get(request.role, 2))
+    )
     return SamplingPlan(
         duration=duration,
         mode="event_guided_temporal_spatial",
@@ -563,29 +543,29 @@ def _resize_rgb(image: Image.Image, max_edge: int) -> Image.Image:
     if max(image.size) <= max_edge:
         return image
     scale = max_edge / max(image.size)
-    size = (max(1, int(round(image.width * scale))), max(1, int(round(image.height * scale))))
+    size = (
+        max(1, int(round(image.width * scale))),
+        max(1, int(round(image.height * scale))),
+    )
     return image.resize(size, Image.Resampling.LANCZOS)
 
 
 def extract_rgb_samples(
-    video_path: str,
-    plan: SamplingPlan,
-    max_edge: int = 640,
+    video_path: str, plan: SamplingPlan, max_edge: int = 640
 ) -> List[RGBSample]:
     """Materialize only RGB frames/crops requested by a sampling plan."""
-    if VideoReader is None:
-        raise ImportError("decord is required for RGB video sampling")
     reader = VideoReader(video_path, ctx=cpu(0))
     total_frames = len(reader)
     fps = float(reader.get_avg_fps())
     if total_frames <= 0 or fps <= 0:
         return []
-
     prepared = []
     seen = set()
     for request in plan.requests:
         frame_index = max(0, min(int(round(request.timestamp * fps)), total_frames - 1))
-        roi_key = tuple(round(value, 4) for value in request.roi) if request.roi else None
+        roi_key = (
+            tuple((round(value, 4) for value in request.roi)) if request.roi else None
+        )
         key = (frame_index, roi_key)
         if key in seen:
             continue
@@ -593,14 +573,17 @@ def extract_rgb_samples(
         prepared.append((request, frame_index))
     if not prepared:
         return []
-
     unique_indices = sorted({frame_index for _, frame_index in prepared})
     arrays = reader.get_batch(unique_indices).asnumpy()
     frames_by_index = {index: array for index, array in zip(unique_indices, arrays)}
-
+    masked_roi = (
+        plan.analysis_summary.get("sel_region", {}).get("setting") == "masked_roi"
+    )
     samples: List[RGBSample] = []
     for request, frame_index in prepared:
         image = Image.fromarray(frames_by_index[frame_index]).convert("RGB")
+        source_size = image.size if masked_roi else None
+        full_image = _resize_rgb(image, max_edge) if masked_roi else None
         pixel_box = None
         role = request.role
         if request.roi is not None:
@@ -618,7 +601,6 @@ def extract_rgb_samples(
                 role = "event_guided_full_frame"
         elif role == "event_guided_focus":
             role = "event_guided_full_frame"
-
         samples.append(
             RGBSample(
                 image=_resize_rgb(image, max_edge=max_edge),
@@ -627,6 +609,9 @@ def extract_rgb_samples(
                 role=role,
                 roi=request.roi if pixel_box is not None else None,
                 pixel_box=pixel_box,
+                spatial_view="masked_roi" if masked_roi else "crop",
+                full_image=full_image,
+                source_size=source_size,
             )
         )
     return samples

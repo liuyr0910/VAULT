@@ -1,3 +1,4 @@
+# Adapted for EventVAULT training and multimodal data inputs.
 """Original-style Qwen-VL LoRA SFT entry point for event-guided images."""
 
 import logging
@@ -10,10 +11,10 @@ import torch
 import transformers
 
 
-TRAIN_CRAFT_DIR = Path(__file__).resolve().parent
-PROJECT_ROOT = TRAIN_CRAFT_DIR.parents[1]
-if str(TRAIN_CRAFT_DIR) not in sys.path:
-    sys.path.insert(0, str(TRAIN_CRAFT_DIR))
+TRAIN_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = TRAIN_DIR.parents[1]
+if str(TRAIN_DIR) not in sys.path:
+    sys.path.insert(0, str(TRAIN_DIR))
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.append(str(PROJECT_ROOT))
 
@@ -23,17 +24,14 @@ from argument import (  # noqa: E402
     ModelArguments,
     TrainingArguments,
 )
-from trainer import replace_qwen2_vl_attention_class  # noqa: E402
-from qwenvl.data.data_processor_event_lora import (  # noqa: E402
+from trainer import create_optimizer  # noqa: E402, F401
+from qwenvl.data.data_processor_eventvault import (  # noqa: E402
     make_supervised_data_module,
 )
 
 from peft import LoraConfig, TaskType, get_peft_model  # noqa: E402
 from transformers import (  # noqa: E402
     AutoProcessor,
-    Qwen2_5_VLForConditionalGeneration,
-    Qwen2VLForConditionalGeneration,
-    Qwen3VLMoeForConditionalGeneration,
     Qwen3VLForConditionalGeneration,
     Trainer,
 )
@@ -97,25 +95,14 @@ def train(attn_implementation="flash_attention_2", patch_embed_linear=False):
     parser = transformers.HfArgumentParser(
         (ModelArguments, DataArguments, TrainingArguments, LoraArguments)
     )
-    model_args, data_args, training_args, lora_args = parser.parse_args_into_dataclasses()
+    model_args, data_args, training_args, lora_args = (
+        parser.parse_args_into_dataclasses()
+    )
     local_rank = training_args.local_rank
     os.makedirs(training_args.output_dir, exist_ok=True)
 
-    model_name = model_args.model_name_or_path.lower()
-    if "qwen3" in model_name and "moe" in model_name:
-        model_class = Qwen3VLMoeForConditionalGeneration
-        data_args.model_type = "qwen3vl"
-    elif "qwen3" in model_name:
-        model_class = Qwen3VLForConditionalGeneration
-        data_args.model_type = "qwen3vl"
-    elif "qwen2.5" in model_name:
-        model_class = Qwen2_5_VLForConditionalGeneration
-        data_args.model_type = "qwen2.5vl"
-    else:
-        model_class = Qwen2VLForConditionalGeneration
-        data_args.model_type = "qwen2vl"
-
-    model = model_class.from_pretrained(
+    data_args.model_type = "qwen3vl"
+    model = Qwen3VLForConditionalGeneration.from_pretrained(
         model_args.model_name_or_path,
         cache_dir=training_args.cache_dir,
         attn_implementation=attn_implementation,
@@ -123,6 +110,7 @@ def train(attn_implementation="flash_attention_2", patch_embed_linear=False):
     )
     if patch_embed_linear:
         from qwenvl.patch_embed_linear import enable_patch_embed_linear
+
         enable_patch_embed_linear(model)
     rank0_print(
         f"The initialized model is {model_args.model_name_or_path}, "
@@ -132,14 +120,13 @@ def train(attn_implementation="flash_attention_2", patch_embed_linear=False):
     processor = AutoProcessor.from_pretrained(model_args.model_name_or_path)
     # The dataset/collator use this tokenizer, not the separate Trainer tokenizer.
     processor.tokenizer.model_max_length = training_args.model_max_length
-    if data_args.data_flatten or data_args.data_packing:
-        replace_qwen2_vl_attention_class()
     model.config.use_cache = False
 
     if training_args.gradient_checkpointing:
         if hasattr(model, "enable_input_require_grads"):
             model.enable_input_require_grads()
         else:
+
             def make_inputs_require_grad(module, inputs, output):
                 output.requires_grad_(True)
 

@@ -1,3 +1,4 @@
+# Adapted for EventVAULT training and multimodal data inputs.
 import transformers
 from dataclasses import dataclass, field
 from typing import List, Optional
@@ -5,9 +6,7 @@ from typing import List, Optional
 
 @dataclass
 class ModelArguments:
-    model_name_or_path: Optional[str] = field(
-        default="Qwen/Qwen2.5-VL-3B-Instruct"
-    )
+    model_name_or_path: Optional[str] = field(default="Qwen/Qwen3-VL-8B-Instruct")
     tune_mm_llm: bool = field(default=False)
     tune_mm_mlp: bool = field(default=False)
     tune_mm_vision: bool = field(default=False)
@@ -15,14 +14,10 @@ class ModelArguments:
 
 @dataclass
 class DataArguments:
-    dataset_use: str = field(default="")
     data_path: Optional[str] = field(
         default=None,
-        metadata={"help": "Path to a local JSON/JSONL SFT dataset."},
+        metadata={"help": "Path to the prepared EventVAULT JSON."},
     )
-    data_flatten: bool = field(default=False)
-    data_packing: bool = field(default=False)
-    base_interval: int = field(default=2)
     max_pixels: int = field(default=1280 * 28 * 28)
     min_pixels: int = field(default=256 * 28 * 28)
     video_max_frames: Optional[int] = field(default=8)

@@ -1,23 +1,21 @@
-# Generated local files may contain machine-specific paths: never publish them.
 __pycache__/
 *.py[cod]
-*.log
+.pytest_cache/
+.venv*/
 .env
 .env.*
-.venv/
 outputs/
+models/
+data/
 sft/cache/
-sft/data/*event_guided*
-sft/data/*timestamp_event_images*
-data/events/
+sft/data/
 *.safetensors
-*.bin
 *.pt
 *.pth
-# Publish videos separately as a dataset archive, not in the code Git repository.
-data/videos/
+*.bin
+*.log
+*.zip
+*.private.*
+.DS_Store
 
-# Dataset and generated instructions are distributed separately.
-data/annotations/
-data/manifest.json
-sft/data/
+.ruff_cache/

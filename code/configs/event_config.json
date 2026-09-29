@@ -1,5 +1,13 @@
 {
   "max_groups": 3,
+  "score_config": {
+    "analysis_bins": 96,
+    "spatial_grid_width": 16,
+    "spatial_grid_height": 12,
+    "activity_threshold": 0.35,
+    "min_temporal_contrast": 0.08,
+    "merge_gap_bins": 1
+  },
   "frame_windows": [
     3,
     6,
@@ -12,8 +20,5 @@
   "sensor_width": 240,
   "sensor_height": 180,
   "timestamp_divisor": 1000000.0,
-  "max_read_events": 4000000,
-  "filter_inactive_anchors": true,
-  "one_anchor_per_segment": true,
-  "balanced_event_note": false
+  "max_read_events": 4000000
 }

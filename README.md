@@ -1,35 +1,20 @@
 # VAULT
 
-Research code for **TEA + SEL + AEER**, using the timestamp-event-images
-Qwen3-VL-8B LoRA pipeline.
+VAULT project website and EventVAULT research code for TEA + SEL + AEER.
 
 ## Code
 
-The implementation is in [`code/`](code/README.md):
-
-- [Installation and full workflow](code/README.md)
-- [中文说明](code/README.zh-CN.md)
-- [Data preparation](code/scripts/prepare.sh)
-- [LoRA training](code/scripts/train.sh)
-- [Weight merging](code/scripts/merge.sh)
-- [Inference](code/scripts/infer.sh)
-- [Evaluation](code/scripts/evaluate.sh)
-- [Validation scope](code/VALIDATION.md)
-
-Run all workflow commands from `code/`:
-
-```bash
-cd code
-```
+The implementation is in [code/](code/README.md). Follow the
+[setup and workflow](code/README.md) to prepare data, train the LoRA model,
+merge weights, run inference, and evaluate results. Run commands from `code/`.
 
 ## Dataset
 
-Videos and annotations are distributed separately; the download link is pending.
-See [dataset placement](code/data/README.md) for the expected directory structure.
-Dataset videos, annotations, event caches and model checkpoints are not included
-in this code repository.
+Videos and annotations are distributed separately. Download them and place them
+under `code/data/` as described in the [workflow](code/README.md).
+No videos, annotations, event caches, model weights, or predictions are stored
+in this repository.
 
-## Repository layout
+## Website
 
-`index.html` and `static/` serve the project website. The `code/` directory is the
-standalone training and evaluation package.
+`index.html` and `static/` serve the project website.
