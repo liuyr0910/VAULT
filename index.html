@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>VAULT: A Low-Light RGB–Event Benchmark for Video Anomaly Understanding</title>
-  <meta name="description" content="VAULT: a low-light RGB–event benchmark for video anomaly understanding, with temporal allocation, spatial localization, and adaptive event evidence representation.">
+  <title>SEEING ANOMALIES IN THE DARK: VIDEO ANOMALY UNDERSTANDING WITH LOW-LIGHT CONDITIONS FOR MULTIMODAL LLMS</title>
+  <meta name="description" content="VAULT is a benchmark for video anomaly understanding under low-light conditions; EventVAULT combines RGB and event evidence across four tasks.">
   <meta name="theme-color" content="#ffffff">
-  <meta property="og:title" content="VAULT: A Low-Light RGB–Event Benchmark for Video Anomaly Understanding">
-  <meta property="og:description" content="A benchmark and event-enhanced framework for multi-task video anomaly understanding.">
+  <meta property="og:title" content="SEEING ANOMALIES IN THE DARK: VIDEO ANOMALY UNDERSTANDING WITH LOW-LIGHT CONDITIONS FOR MULTIMODAL LLMS">
+  <meta property="og:description" content="VAULT is a low-light video anomaly understanding benchmark, and EventVAULT is its event-guided multimodal framework.">
   <meta property="og:type" content="website">
   <link rel="icon" href="static/images/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,39 +20,76 @@
 <a class="skip-link" href="#main">Skip to content</a>
 <nav class="research-nav" aria-label="Page navigation">
   <a class="home-link" href="./" aria-label="Project website"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 9-8 9 8M5 10v11h5v-7h4v7h5V10"/></svg></a>
-  <details class="nav-menu"><summary>Explore VAULT <span aria-hidden="true">⌄</span></summary><div class="nav-dropdown"><a href="#overview">Abstract</a><a href="#dataset">Dataset</a><a href="#method">Method Overview</a><a href="#results">Experimental Results</a><a href="#qualitative">Qualitative Results</a><a href="#resources">Resources</a><a href="#citation">BibTeX</a></div></details>
+  <details class="nav-menu"><summary>Explore VAULT <span aria-hidden="true">⌄</span></summary><div class="nav-dropdown"><a href="#demonstration">Demonstration</a><a href="#overview">Abstract</a><a href="#dataset">Dataset</a><a href="#method">Method Overview</a><a href="#results">Experimental Results</a><a href="#qualitative">Qualitative Results</a><a href="#resources">Resources</a><a href="#citation">BibTeX</a></div></details>
 </nav>
 <main id="main">
   <header class="publication-header container">
-    <h1>VAULT: A Low-Light RGB–Event Benchmark for Video Anomaly Understanding</h1>
+    <h1>SEEING ANOMALIES IN THE DARK: VIDEO ANOMALY UNDERSTANDING WITH LOW-LIGHT CONDITIONS FOR MULTIMODAL LLMS</h1>
     <div class="publication-authors">Author list to be announced</div>
     <div class="publication-affiliations">Affiliations to be announced</div>
     <div class="publication-links" aria-label="Publication resources">
       <span class="resource-link" aria-label="Paper, coming soon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h8l4 4v16H6zM14 2v5h4M9 12h6M9 16h6"/></svg>Paper</span>
       <a class="resource-link" href="https://anonymous.4open.science/r/VAULT" target="_blank" rel="noopener noreferrer" aria-label="View research code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 6-6 6 6 6m8-12 6 6-6 6M14 3l-4 18"/></svg>Code</a>
       <span class="resource-link" aria-label="Dataset, coming soon"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 4 16 4 16 0V5M4 12c0 4 16 4 16 0"/></svg>Dataset</span>
-      <span class="resource-link" aria-label="Demo, coming soon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 22h8m-4-4v4m-2-15 6 4-6 4z"/></svg>Demo</span>
+      <a class="resource-link" href="#demonstration" aria-label="View video demonstration"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 22h8m-4-4v4m-2-15 6 4-6 4z"/></svg>Demo</a>
     </div>
-    <p class="release-note">Code available now. Paper, dataset, and demo coming soon.</p>
+    <p class="release-note">Code and demonstration available now. Paper and dataset coming soon.</p>
     <hr>
-    <p class="publication-summary">Understanding video anomalies under challenging illumination<br class="desktop-break"> with <strong>complementary RGB and event evidence</strong>.</p>
+    <p class="publication-summary">A low-light video anomaly benchmark and an event-guided framework for multimodal understanding.</p>
   </header>
 
-  <section class="teaser container" aria-label="Low-light video examples">
-    <figure>
-      <div class="teaser-frames">
-        <figure><button class="image-zoom" type="button" aria-label="Enlarge original RGB frame at 4.3 seconds"><img src="static/images/rgb-4.3s.png" width="1280" height="720" alt="Original low-light dashcam frame at 4.3 seconds."></button><figcaption>RGB frame at 4.3 s</figcaption></figure>
-        <figure><button class="image-zoom" type="button" aria-label="Enlarge original RGB frame at 6.8 seconds"><img src="static/images/rgb-6.8s.png" width="1280" height="720" alt="Original low-light dashcam frame at 6.8 seconds."></button><figcaption>RGB frame at 6.8 s</figcaption></figure>
-        <figure><button class="image-zoom" type="button" aria-label="Enlarge original RGB frame at 9.3 seconds"><img src="static/images/rgb-9.3s.png" width="1280" height="720" alt="Original low-light dashcam frame at 9.3 seconds."></button><figcaption>RGB frame at 9.3 s</figcaption></figure>
+  <section id="demonstration" class="section demonstration container-wide" aria-labelledby="demo-title">
+    <div class="demo-intro">
+      <p class="demo-kicker">Annotated video examples</p>
+      <h2 id="demo-title">Demonstration</h2>
+      <p>Four RGB frames are sampled from the annotated anomaly interval of each test video. The labels at right follow the ground-truth categories; the frames have not been brightened.</p>
+    </div>
+    <article class="demo-row" aria-label="Nighttime intrusion: Burglary">
+      <div class="demo-info"><span class="demo-number">01 / 04</span><h3>Nighttime intrusion</h3><p>Two people approach a parked car at night; one searches it while the other raises a hand toward the camera.</p></div>
+      <div class="demo-frame-grid" aria-label="Four anomalous frames">
+        <figure><button class="image-zoom" type="button" aria-label="Enlarge Nighttime intrusion frame at 8 seconds"><img loading="lazy" decoding="async" src="static/images/demo-burglary-01.webp" alt="Nighttime intrusion, annotated anomaly frame at 8 seconds."></button><figcaption>8 s</figcaption></figure>
+        <figure><button class="image-zoom" type="button" aria-label="Enlarge Nighttime intrusion frame at 15 seconds"><img loading="lazy" decoding="async" src="static/images/demo-burglary-02.webp" alt="Nighttime intrusion, annotated anomaly frame at 15 seconds."></button><figcaption>15 s</figcaption></figure>
+        <figure><button class="image-zoom" type="button" aria-label="Enlarge Nighttime intrusion frame at 22 seconds"><img loading="lazy" decoding="async" src="static/images/demo-burglary-03.webp" alt="Nighttime intrusion, annotated anomaly frame at 22 seconds."></button><figcaption>22 s</figcaption></figure>
+        <figure><button class="image-zoom" type="button" aria-label="Enlarge Nighttime intrusion frame at 29 seconds"><img loading="lazy" decoding="async" src="static/images/demo-burglary-04.webp" alt="Nighttime intrusion, annotated anomaly frame at 29 seconds."></button><figcaption>29 s</figcaption></figure>
       </div>
-      <figcaption class="figure-caption"><strong>Low-light video anomaly understanding.</strong> Limited visibility obscures appearance cues in RGB video. VAULT studies how event representations can complement these observations across four understanding tasks. The frames above are original, unenhanced inputs from video 2133_1.</figcaption>
-    </figure>
+      <div class="demo-category"><span>Anomaly category</span><strong>Burglary</strong></div>
+    </article>
+    <article class="demo-row" aria-label="Indoor assault: Assault">
+      <div class="demo-info"><span class="demo-number">02 / 04</span><h3>Indoor assault</h3><p>A person is attacked inside a dimly lit room as others move toward the confrontation.</p></div>
+      <div class="demo-frame-grid" aria-label="Four anomalous frames">
+        <figure><button class="image-zoom" type="button" aria-label="Enlarge Indoor assault frame at 14 seconds"><img loading="lazy" decoding="async" src="static/images/demo-assault-01.webp" alt="Indoor assault, annotated anomaly frame at 14 seconds."></button><figcaption>14 s</figcaption></figure>
+        <figure><button class="image-zoom" type="button" aria-label="Enlarge Indoor assault frame at 21 seconds"><img loading="lazy" decoding="async" src="static/images/demo-assault-02.webp" alt="Indoor assault, annotated anomaly frame at 21 seconds."></button><figcaption>21 s</figcaption></figure>
+        <figure><button class="image-zoom" type="button" aria-label="Enlarge Indoor assault frame at 29 seconds"><img loading="lazy" decoding="async" src="static/images/demo-assault-03.webp" alt="Indoor assault, annotated anomaly frame at 29 seconds."></button><figcaption>29 s</figcaption></figure>
+        <figure><button class="image-zoom" type="button" aria-label="Enlarge Indoor assault frame at 36 seconds"><img loading="lazy" decoding="async" src="static/images/demo-assault-04.webp" alt="Indoor assault, annotated anomaly frame at 36 seconds."></button><figcaption>36 s</figcaption></figure>
+      </div>
+      <div class="demo-category"><span>Anomaly category</span><strong>Assault</strong></div>
+    </article>
+    <article class="demo-row" aria-label="Road collision: Traffic accident · Fire">
+      <div class="demo-info"><span class="demo-number">03 / 04</span><h3>Road collision</h3><p>A nighttime crash blocks the roadway, and a vehicle catches fire.</p></div>
+      <div class="demo-frame-grid" aria-label="Four anomalous frames">
+        <figure><button class="image-zoom" type="button" aria-label="Enlarge Road collision frame at 5 seconds"><img loading="lazy" decoding="async" src="static/images/demo-traffic-01.webp" alt="Road collision, annotated anomaly frame at 5 seconds."></button><figcaption>5 s</figcaption></figure>
+        <figure><button class="image-zoom" type="button" aria-label="Enlarge Road collision frame at 14 seconds"><img loading="lazy" decoding="async" src="static/images/demo-traffic-02.webp" alt="Road collision, annotated anomaly frame at 14 seconds."></button><figcaption>14 s</figcaption></figure>
+        <figure><button class="image-zoom" type="button" aria-label="Enlarge Road collision frame at 24 seconds"><img loading="lazy" decoding="async" src="static/images/demo-traffic-03.webp" alt="Road collision, annotated anomaly frame at 24 seconds."></button><figcaption>24 s</figcaption></figure>
+        <figure><button class="image-zoom" type="button" aria-label="Enlarge Road collision frame at 34 seconds"><img loading="lazy" decoding="async" src="static/images/demo-traffic-04.webp" alt="Road collision, annotated anomaly frame at 34 seconds."></button><figcaption>34 s</figcaption></figure>
+      </div>
+      <div class="demo-category"><span>Anomaly category</span><strong>Traffic accident · Fire</strong></div>
+    </article>
+    <article class="demo-row" aria-label="Building fire: Fire">
+      <div class="demo-info"><span class="demo-number">04 / 04</span><h3>Building fire</h3><p>Flames climb a building façade as the fire spreads upward.</p></div>
+      <div class="demo-frame-grid" aria-label="Four anomalous frames">
+        <figure><button class="image-zoom" type="button" aria-label="Enlarge Building fire frame at 18 seconds"><img loading="lazy" decoding="async" src="static/images/demo-fire-01.webp" alt="Building fire, annotated anomaly frame at 18 seconds."></button><figcaption>18 s</figcaption></figure>
+        <figure><button class="image-zoom" type="button" aria-label="Enlarge Building fire frame at 47 seconds"><img loading="lazy" decoding="async" src="static/images/demo-fire-02.webp" alt="Building fire, annotated anomaly frame at 47 seconds."></button><figcaption>47 s</figcaption></figure>
+        <figure><button class="image-zoom" type="button" aria-label="Enlarge Building fire frame at 78 seconds"><img loading="lazy" decoding="async" src="static/images/demo-fire-03.webp" alt="Building fire, annotated anomaly frame at 78 seconds."></button><figcaption>78 s</figcaption></figure>
+        <figure><button class="image-zoom" type="button" aria-label="Enlarge Building fire frame at 107 seconds"><img loading="lazy" decoding="async" src="static/images/demo-fire-04.webp" alt="Building fire, annotated anomaly frame at 107 seconds."></button><figcaption>107 s</figcaption></figure>
+      </div>
+      <div class="demo-category"><span>Anomaly category</span><strong>Fire</strong></div>
+    </article>
   </section>
 
   <section id="overview" class="section container">
     <div class="text-column">
       <h2>Abstract</h2>
-      <div class="prose"><p>Low-light conditions make video anomaly understanding challenging by reducing the visibility of appearance and behavioral cues. <strong>VAULT</strong> provides a benchmark for studying this problem through anomaly description, classification, temporal grounding, and video question answering. The current dataset contains 1,776 annotated videos spanning 25 anomaly categories and a separate normal category, with 5,328 question–answer pairs.</p><p>We study an event-enhanced framework that combines <strong>Temporal Evidence Allocation (TEA)</strong>, <strong>Spatial Evidence Localization (SEL)</strong>, and <strong>Adaptive Event Evidence Representation (AEER)</strong>. Event activity guides the selection of RGB observations and regions, while aligned event images provide additional evidence for joint reasoning. In the current experiments, events are simulated from source videos using v2e; they provide a complementary representation of the RGB signal. Current evaluations show improvements over the historical RGB baseline primarily in temporal grounding and video question answering.</p></div>
+      <div class="prose"><p>Video anomaly understanding (VAU) aims to detect and classify anomalous events in videos, providing fine-grained explanations of their nature and context. However, existing works in this direction often assume well-lit scenes, paying limited attention to low-light scenarios where many real-world anomalies occur, e.g., nighttime intrusions and blackout looting.</p><p>To address this challenge, we introduce VAULT, a benchmark for low-light video anomaly understanding across various granularities. Specifically, VAULT contributes: (1) broad coverage of poorly illuminated anomalies with four illumination levels, covering 25 anomaly categories across 6 scene types, and (2) a unified evaluation suite comprising four tasks, i.e., temporal grounding, anomaly classification, anomaly description, and video question answering (VQA).</p><p>Building upon VAULT, we propose EventVAULT, an event-guided framework that combines RGB appearance cues with event-stream dynamics for low-light VAU. Instead of relying solely on RGB appearance, EventVAULT leverages event streams to capture transient dynamics and address three key challenges: when to acquire informative RGB evidence, where to focus within the scene, and how anomalous events evolve.</p><p>Extensive experiments demonstrate that the performance of existing MLLMs deteriorates as illumination decreases, while EventVAULT consistently improves performance across all four tasks. Our dataset and findings jointly highlight the need for more robust VAU under extreme visual conditions.</p></div>
     </div>
   </section>
 
@@ -62,10 +99,10 @@
     <div class="dataset-facts" aria-label="Dataset statistics"><div><strong>1,776</strong><span>Videos</span></div><div><strong>25 + 1</strong><span>Anomaly + normal classes</span></div><div><strong>4</strong><span>Understanding tasks</span></div><div><strong>5,328</strong><span>VQA questions</span></div></div>
     <figure class="statistics-figure publication-figure">
       <button class="image-zoom" type="button" aria-label="Enlarge the VAULT dataset overview">
-        <img loading="lazy" decoding="async" src="static/images/dataset4.png" width="5132" height="2488" alt="VAULT dataset overview: grouped anomaly categories, video duration distribution, scene and time-of-day composition, and illumination-score distribution.">
+        <img loading="lazy" decoding="async" src="static/images/dataset-overview.webp" width="5506" height="1934" alt="VAULT dataset statistics: anomaly taxonomy, scene and time-of-day distribution, video duration distribution, and illumination-score histogram.">
       </button>
-      <figcaption class="figure-caption"><strong>VAULT dataset overview.</strong> The figure summarizes anomaly categories, video durations, scene and time-of-day composition, and illumination scores. Categories are organized into violence and conflict, property crime, traffic and transport, disasters and hazards, accidents, and normal videos. The illumination score is a project-defined measure, not calibrated lux.</figcaption>
-      <p class="figure-tools"><a href="static/images/dataset4.png" target="_blank" rel="noopener noreferrer">View full-resolution dataset figure ↗</a></p>
+      <figcaption class="figure-caption"><strong>VAULT dataset overview.</strong> The figure summarizes anomaly categories, scene and time-of-day composition, video durations, and illumination scores. The illumination score is a project-defined measure, not calibrated lux.</figcaption>
+      <p class="figure-tools"><a href="static/images/dataset-overview.webp" target="_blank" rel="noopener noreferrer">View full-resolution dataset figure ↗</a></p>
     </figure>
     <div class="prose"><p>Scene annotations include 1,175 outdoor, 567 indoor, and 34 mixed-scene videos. Time-of-day labels include 1,031 night, 744 day, and one uncertain-time video. These context labels are distinct from measured illumination.</p></div>
   </section>
@@ -75,13 +112,13 @@
     <p class="prose">Given an RGB video and its aligned simulated event stream, TEA selects observation times, SEL identifies relevant spatial regions, and AEER constructs event images aligned with the selected RGB evidence. The combined observations are used for multi-task instruction tuning.</p>
     <figure class="method-figure publication-figure">
       <button class="image-zoom" type="button" aria-label="Enlarge the TEA, SEL, and AEER method pipeline">
-        <img loading="lazy" decoding="async" src="static/images/pipeline.png" width="4513" height="2210" alt="VAULT method pipeline: RGB video and v2e events feed TEA temporal selection and SEL spatial localization; AEER constructs adaptive event windows and early, middle, and late event images for LoRA-based multimodal reasoning across four tasks.">
+        <img loading="lazy" decoding="async" src="static/images/eventvault-pipeline.webp" width="1457" height="721" alt="VAULT method pipeline: RGB video and v2e events feed TEA temporal selection and SEL spatial localization; AEER constructs adaptive event windows and early, middle, and late event images for LoRA-based multimodal reasoning across four tasks.">
       </button>
       <figcaption class="figure-caption"><strong>Method pipeline.</strong> TEA addresses <em>when</em> to observe by allocating temporal evidence; SEL addresses <em>where</em> to observe by selecting spatial regions or retaining full frames. AEER adapts event windows and decomposes the evidence into early, middle, and late stages. RGB observations, event images, and task instructions are supplied to the multimodal model for temporal grounding, classification, description, and VQA. Example answers in the diagram illustrate the task formats.</figcaption>
-      <p class="figure-tools"><a href="static/images/pipeline.png" target="_blank" rel="noopener noreferrer">View full-resolution method pipeline ↗</a></p>
+      <p class="figure-tools"><a href="static/images/eventvault-pipeline.webp" target="_blank" rel="noopener noreferrer">View full-resolution method pipeline ↗</a></p>
     </figure>
     <div class="prose"><p><strong>Temporal and spatial evidence.</strong> TEA and SEL share an event-activity histogram over 96 temporal bins and a 12 × 16 spatial grid. Global observations preserve scene context, while focused observations cover active segments. Event activity scores guide sampling; they are not anomaly probabilities.</p><p><strong>Event evidence representation.</strong> AEER selects up to three event anchors and renders early, middle, and late polarity images for each. The framework uses Qwen3-VL’s existing visual pathway with language-model LoRA, while freezing the vision backbone and projection module.</p><p><strong>Why event evidence?</strong> Brightness-change representations can supply motion-sensitive cues when RGB appearance is ambiguous. Because current events are simulated from source RGB video, these experiments do not establish the benefits of independently captured event-camera data or illumination invariance.</p></div>
-    <details class="technical-details"><summary>Implementation and experimental scope</summary><p>Current entry points request 16–24 RGB observations; allocation and deduplication can leave fewer. AEER adds at most nine event images. There is no dedicated event encoder or auxiliary event loss. Current inference uses the v3 anchor-selection policy, whereas the historical full-model training cache records v2; identical selection policies at training and inference are not assumed.</p></details>
+    <details class="technical-details"><summary>Implementation and experimental scope</summary><p>Current entry points request 16–24 RGB observations; allocation and deduplication can leave fewer. AEER adds at most nine event images. There is no dedicated event encoder or auxiliary event loss. </p></details>
   </section>
 
   <section id="results" class="section container">
@@ -112,3 +149,4 @@
 <dialog id="image-dialog" aria-label="Enlarged project figure"><button class="dialog-close" type="button" aria-label="Close enlarged figure">Close ×</button><img id="dialog-image" alt=""><p id="dialog-caption"></p></dialog>
 </body>
 </html>
+
