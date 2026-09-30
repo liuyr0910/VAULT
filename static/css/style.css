@@ -118,7 +118,6 @@ dialog { background: #fff; color: #4a4a4a; }
 .publication-header h1 { max-width: 1100px; font-size: clamp(30px, 3.7vw, 46px); font-weight: 600; line-height: 1.15; letter-spacing: -.8px; }
 .demonstration { padding-top: 34px; }
 .demo-intro { text-align: center; margin: 0 auto 24px; max-width: 850px; }
-.demo-kicker { color: #66708a; text-transform: uppercase; letter-spacing: .14em; font-size: 12px; font-weight: 700; margin-bottom: 5px; }
 .demo-intro h2 { margin-bottom: 10px; }
 .demo-intro > p:last-child { font-size: 14px; color: #667085; }
 .demo-row { display: flex; display: grid; grid-template-columns: minmax(110px, 1fr) minmax(0, 960px) minmax(110px, 1fr); justify-content: space-between; align-items: center; padding: 17px 0; border-top: 1px solid #dfe4ec; }
