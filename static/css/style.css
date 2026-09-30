@@ -143,3 +143,12 @@ dialog { background: #fff; color: #4a4a4a; }
   .demo-frame-grid { grid-column: 1; grid-row: 2; max-width: none; }
   .demo-frame-grid img { height: 150px; }
 }
+.results-section .results-copy { max-width: 960px; margin: 0 auto; }
+.results-table { min-width: 1140px; font-variant-numeric: tabular-nums; }
+.results-table th, .results-table td { padding: 10px 8px; }
+.results-table thead th { white-space: nowrap; }
+.results-table tbody th[scope="row"] { white-space: nowrap; font-weight: 400; }
+.results-table .result-group th { text-align: left; font-weight: 700; background: #f2f4f8; border-top: 2px solid #65708a; color: #363636; }
+.results-table .ours { background: #f6f3f9; }
+.results-table .ours th[scope="row"] { font-weight: 600; }
+.results-table .second-best, .results-copy .second-best { text-decoration: underline; text-underline-offset: 2px; }
