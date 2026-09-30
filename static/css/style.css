@@ -114,7 +114,7 @@ dialog p { margin-top: 12px; font-size: 13px; }
 dialog { background: #fff; color: #4a4a4a; }
 
 /* Four-frame demonstrations retain the source video's original visibility. */
-.container-wide { width: min(1280px, calc(100% - 48px)); margin: 0 auto; }
+.container-wide { width: calc(100% - 48px); max-width: 1280px; margin: 0 auto; }
 .publication-header h1 { max-width: 1100px; font-size: clamp(30px, 3.7vw, 46px); font-weight: 600; line-height: 1.15; letter-spacing: -.8px; }
 .demonstration { padding-top: 34px; }
 .demo-intro { text-align: center; margin: 0 auto 24px; max-width: 850px; }
